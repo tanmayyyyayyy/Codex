@@ -284,7 +284,19 @@ export class Engine {
     // audit record carries risk.band='AUDIT' so it surfaces as elevated-risk on the dashboard.)
     if (action === 'ALLOW' || action === 'BLOCK') {
       this.writeAudit({ ...base, event: 'decision', action, reason, viaHitl: false });
-      if (action === 'BLOCK') this.maybeAutoOpen(call.sessionId, risk.band);
+      if (action === 'BLOCK') {
+        this.maybeAutoOpen(call.sessionId, risk.band);
+        // M10: Autonomous Containment. If a call is blocked due to high-severity risk (exfil/injection),
+        // automatically quarantine the session to stop a compromised agent from trying other bypasses.
+        if (risk.band === 'BLOCK' && (signal === 'content' || signal === 'injection')) {
+          const q = this.controls.autoQuarantine(call.sessionId, `Automatic quarantine triggered by ${signal} violation: ${reason}`);
+          this.writeAudit({
+            event: 'agent-quarantined',
+            sessionId: call.sessionId,
+            reason: q.reason,
+          });
+        }
+      }
       return json(res, 200, { action, reason, band: risk.band, sessionId: call.sessionId });
     }
 

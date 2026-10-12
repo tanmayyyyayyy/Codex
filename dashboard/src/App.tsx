@@ -23,7 +23,13 @@ function ViolationCard({ v, now, onDecide }: { v: SecurityViolation; now: number
   };
   return <article className={`review-card ${highRisk ? 'review-card-danger' : ''}`}>
     <div className="review-card-top"><span className={`category ${CATEGORY_STYLE[v.category]}`}>{v.category}</span><span className="review-tool">{v.toolCall.tool}</span>{v.risk && <span className="risk-score">Risk {v.risk.score} · {v.risk.band}</span>}<span className="review-clock">{remaining}s</span></div>
-    <div className="review-copy"><h3>{title}</h3>{body && <pre>{body}</pre>}<p>{v.reason}</p>{v.toolCall.sessionId && <p className="review-agent">Agent {v.toolCall.sessionId}</p>}</div>
+    <div className="review-copy">
+      <h3 style={{ fontSize: '1rem', marginBottom: '0.25rem', color: 'var(--text-primary)' }}>{title}</h3>
+      {v.ruleId && <span className="review-rule" style={{ fontSize: '0.75rem', background: 'var(--bg-accent)', padding: '2px 6px', borderRadius: '4px', color: 'var(--text-muted)', display: 'inline-block', marginBottom: '0.5rem' }}>Rule: {v.ruleId}</span>}
+      {body && <pre>{body}</pre>}
+      <p>{v.reason}</p>
+      {v.toolCall.sessionId && <p className="review-agent">Agent {v.toolCall.sessionId}</p>}
+    </div>
     {error && <div className="review-error" role="alert">Decision failed — {error}. The action remains held.</div>}
     <div className="review-actions"><button className="approve-button" disabled={busy} onClick={() => act('ALLOW')}>{busy ? 'Submitting…' : 'Approve action'}</button><button className="deny-button" disabled={busy} onClick={() => act('BLOCK')}>{busy ? 'Submitting…' : 'Block action'}</button></div>
   </article>;

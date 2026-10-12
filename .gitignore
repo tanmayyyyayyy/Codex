@@ -12,3 +12,6 @@ ca.crt
 ca.key
 *.pem
 tool_pins.json
+
+# Local secrets
+secrets.txt

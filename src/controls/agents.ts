@@ -45,4 +45,9 @@ export class AgentControlStore {
       ? `Agent ${id} is quarantined — governed actions are blocked until an operator resumes it.`
       : `Agent ${id} is paused — governed actions are blocked until an operator resumes it.`;
   }
+
+  /** Trigger an automatic quarantine when the risk threshold is exceeded. */
+  autoQuarantine(sessionId: string, reason: string): AgentControl {
+    return this.set(sessionId, 'quarantined', `[AUTO] ${reason}`);
+  }
 }
